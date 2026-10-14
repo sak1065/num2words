@@ -92,6 +92,22 @@ impl std::fmt::Display for Num2Err {
     }
 }
 
+/// Allows `Num2Err` to be used with `?` in functions returning
+/// `Box<dyn Error>`
+///
+/// Example:
+/// ```
+/// use num2words::Num2Words;
+/// fn words() -> Result<String, Box<dyn std::error::Error>> {
+///     Ok(Num2Words::new(-42).ordinal().to_words()?)
+/// }
+/// assert_eq!(
+///     words().unwrap_err().to_string(),
+///     "cannot treat negative number as ordinal"
+/// );
+/// ```
+impl std::error::Error for Num2Err {}
+
 /// Builder for `num2words`
 pub struct Num2Words {
     num: BigFloat,
