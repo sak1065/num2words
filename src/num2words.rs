@@ -262,6 +262,10 @@ impl Num2Words {
     /// 
     /// reformed/1990/rectifié/rectification
     ///
+    /// # Turkish language accepts:
+    /// joined/bitişik/bitisik to write numbers without spaces, as on cheques
+    /// and invoices
+    ///
     /// # Ukrainian language supports grammatical categories (bold - default):
     /// Number: **singular/sing/однина/од**, plural/pl/множина/мн
     ///
@@ -280,6 +284,10 @@ impl Num2Words {
     /// assert_eq!(
     ///     Num2Words::new(161).lang(Lang::French).prefer("f").prefer("reformed").to_words(),
     ///     Ok(String::from("cent-soixante-et-une"))
+    /// );
+    /// assert_eq!(
+    ///     Num2Words::new(1984).lang(Lang::Turkish).prefer("bitişik").to_words(),
+    ///     Ok(String::from("bindokuzyüzseksendört"))
     /// );
     /// assert_eq!(
     ///     Num2Words::new(51).lang(Lang::Ukrainian).prefer("орудний").to_words(),
