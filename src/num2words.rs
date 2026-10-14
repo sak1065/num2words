@@ -304,6 +304,11 @@ impl Num2Words {
 
     /// Builds the output
     pub fn to_words(self) -> Result<String, Num2Err> {
+        // `parse` rejects NaN, but `new` accepts it, e.g. from f64::NAN
+        if self.num.is_nan() {
+            return Err(Num2Err::CannotConvert);
+        }
+
         let lang = lang::to_language(self.lang, self.preferences);
         match self.output {
             Output::Cardinal => lang.to_cardinal(self.num),
@@ -353,5 +358,41 @@ mod tests {
     fn test_string_not_valid() {
         assert!(Num2Words::parse("not a number").is_none());
         assert!(Num2Words::parse("NAN").is_none());
+    }
+
+    #[test]
+    fn test_nan() {
+        for lang in [
+            Lang::English,
+            Lang::French,
+            Lang::French_BE,
+            Lang::French_CH,
+            Lang::Turkish,
+            Lang::Ukrainian,
+        ] {
+            assert_eq!(
+                Num2Words::new(f64::NAN)
+                    .lang(lang)
+                    .currency(Currency::DOLLAR)
+                    .to_words(),
+                Err(Num2Err::CannotConvert)
+            );
+        }
+        assert_eq!(
+            Num2Words::new(f64::NAN).cardinal().to_words(),
+            Err(Num2Err::CannotConvert)
+        );
+        assert_eq!(
+            Num2Words::new(f64::NAN).ordinal().to_words(),
+            Err(Num2Err::CannotConvert)
+        );
+        assert_eq!(
+            Num2Words::new(f64::NAN).ordinal_num().to_words(),
+            Err(Num2Err::CannotConvert)
+        );
+        assert_eq!(
+            Num2Words::new(f64::NAN).year().to_words(),
+            Err(Num2Err::CannotConvert)
+        );
     }
 }
